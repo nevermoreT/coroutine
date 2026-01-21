@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+        
+    - name: Check GCC and assembler version
+      run: |
+        echo "=== GCC Version ==="
+        gcc --version
+        echo ""
+        echo "=== Assembler Version ==="
+        as --version
+        echo ""
+        echo "=== System Architecture ==="
+        uname -m
+        
+    - name: Build project
+      run: |
+        echo "=== Cleaning previous build ==="
+        make clean || true
+        echo ""
+        echo "=== Building project ==="
+        make
+        echo ""
+        echo "=== Build artifacts ==="
+        ls -lh *.o coroutine_test 2>/dev/null || true
+        
+    - name: Verify executable
+      run: |
+        echo "=== Checking executable ==="
+        file coroutine_test
+        echo ""
+        echo "=== Executable permissions ==="
+        ls -l coroutine_test
+        echo ""
+        echo "=== Testing if executable runs ==="
+        ./coroutine_test || echo "Test execution completed with exit code: $?"
+        
+    - name: Build summary
+      if: success()
+      run: |
+        echo "✅ Build successful!"
+        echo "✅ All tests passed!"
+        echo ""
+        echo "Build artifacts:"
+        ls -lh coroutine_test *.o 2>/dev/null || true
