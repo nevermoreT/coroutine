@@ -11,6 +11,19 @@ typedef enum {
     COROUTINE_FINISHED   // 完成
 } coroutine_state_t;
 
+// 上下文结构体（用于保存寄存器）
+// 必须在 coroutine_t 之前定义，因为 coroutine_t 需要使用它
+typedef struct context {
+    void *rbx;    // 保存 rbx
+    void *rbp;    // 保存 rbp
+    void *r12;    // 保存 r12
+    void *r13;    // 保存 r13
+    void *r14;    // 保存 r14
+    void *r15;    // 保存 r15
+    void *rsp;    // 保存栈指针
+    void *rip;    // 保存指令指针
+} context_t;
+
 // 协程结构体
 typedef struct coroutine {
     void *stack;              // 栈指针
@@ -22,18 +35,6 @@ typedef struct coroutine {
     char *stack_top;          // 栈顶（用于对齐）
     context_t ctx;            // 保存的上下文
 } coroutine_t;
-
-// 上下文结构体（用于保存寄存器）
-typedef struct context {
-    void *rbx;    // 保存 rbx
-    void *rbp;    // 保存 rbp
-    void *r12;    // 保存 r12
-    void *r13;    // 保存 r13
-    void *r14;    // 保存 r14
-    void *r15;    // 保存 r15
-    void *rsp;    // 保存栈指针
-    void *rip;    // 保存指令指针
-} context_t;
 
 // API函数声明
 
