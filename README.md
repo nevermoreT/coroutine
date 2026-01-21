@@ -8,18 +8,35 @@ coroutine tutorial from Revisiting Coroutines
 
 ## 文件说明
 
+### 协程库
 - `coroutine.h` - 协程库头文件，定义API和数据结构
 - `coroutine.c` - 协程库的C语言实现
 - `context_switch.S` - 上下文切换的汇编实现（x86-64）
-- `test.c` - 测试程序
+- `test.c` - 协程库测试程序
+
+### Echo Server
+- `echo_server.h` - Echo Server 头文件
+- `echo_server.c` - 基于协程和 epoll 的 Echo Server 实现
+- `echo_server_main.c` - Echo Server 主程序
+- `test_client.c` - Echo Server 测试客户端
+- `test_echo_server.sh` - Echo Server 自动化测试脚本
+
+### 构建
 - `Makefile` - 构建文件
 
 ## 功能特性
 
+### 协程库
 - 协程创建和销毁
 - 协程启动（resume）
 - 协程让出（yield）
 - 上下文切换使用汇编实现，性能高效
+
+### Echo Server
+- 基于协程和 Linux epoll 的高性能网络服务器
+- 每个客户端连接使用独立协程处理
+- 非阻塞 I/O 与协程调度完美结合
+- 支持并发处理多个客户端连接
 
 ## 编译说明
 
@@ -32,9 +49,30 @@ make
 编译完成后，运行测试：
 
 ```bash
-make run
+# 运行协程库测试
+make test
 # 或
 ./coroutine_test
+
+# 运行 Echo Server 测试
+chmod +x test_echo_server.sh
+./test_echo_server.sh
+```
+
+### Echo Server 使用
+
+启动服务器：
+
+```bash
+./echo_server [端口号]
+# 默认端口 8888
+```
+
+在另一个终端运行测试客户端：
+
+```bash
+./test_client [主机] [端口]
+# 默认连接到 127.0.0.1:8888
 ```
 
 清理编译产物：
@@ -86,12 +124,22 @@ int main() {
 - `COROUTINE_SUSPENDED` - 已挂起
 - `COROUTINE_FINISHED` - 执行完毕
 
+## Echo Server 示例
+
+Echo Server 展示了如何使用协程库构建高性能网络服务器：
+
+- 使用 epoll 进行事件驱动
+- 每个客户端连接由独立协程处理
+- 非阻塞 I/O 操作
+- 协程自动调度，无需手动管理线程
+
 ## 注意事项
 
 1. 本实现是简化版本，主要用于学习和演示
 2. 实际生产环境建议使用更成熟的协程库（如libco、libtask等）
 3. 栈溢出检查未实现，使用时需确保栈空间充足
 4. 仅支持Linux x86-64平台
+5. Echo Server 需要 Linux epoll 支持
 
 ## 许可证
 

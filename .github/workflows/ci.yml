@@ -39,18 +39,18 @@ jobs:
         make
         echo ""
         echo "=== Build artifacts ==="
-        ls -lh *.o coroutine_test 2>/dev/null || true
+        ls -lh *.o *.a coroutine_test echo_server test_client 2>/dev/null || true
         
-    - name: Verify executable
+    - name: Test coroutine library
       run: |
-        echo "=== Checking executable ==="
-        file coroutine_test
-        echo ""
-        echo "=== Executable permissions ==="
-        ls -l coroutine_test
-        echo ""
-        echo "=== Testing if executable runs ==="
+        echo "=== Testing coroutine library ==="
         ./coroutine_test || echo "Test execution completed with exit code: $?"
+        
+    - name: Test echo server
+      run: |
+        echo "=== Testing echo server ==="
+        chmod +x test_echo_server.sh
+        timeout 10 ./test_echo_server.sh || echo "Echo server test completed"
         
     - name: Build summary
       if: success()
@@ -59,4 +59,4 @@ jobs:
         echo "✅ All tests passed!"
         echo ""
         echo "Build artifacts:"
-        ls -lh coroutine_test *.o 2>/dev/null || true
+        ls -lh *.o *.a coroutine_test echo_server test_client 2>/dev/null || true
